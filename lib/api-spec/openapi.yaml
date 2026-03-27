@@ -101,6 +101,9 @@ components:
           type: integer
         isEmergency:
           type: boolean
+        densityPercent:
+          type: number
+          description: Traffic density as a percentage 0–100
       required:
         - id
         - name
@@ -108,6 +111,7 @@ components:
         - signal
         - vehicleCount
         - isEmergency
+        - densityPercent
 
     TrafficState:
       type: object
@@ -123,6 +127,17 @@ components:
           nullable: true
         cycleTime:
           type: integer
+          description: Legacy field — use greenDuration instead
+        greenDuration:
+          type: integer
+          description: Current dynamically calculated green phase duration in seconds (10–40)
+        countdown:
+          type: integer
+          description: Seconds remaining in the current green phase
+        activeLane:
+          type: string
+          nullable: true
+          description: Human-readable label of the active green road group e.g. "North / South"
         timestamp:
           type: string
       required:
@@ -130,6 +145,9 @@ components:
         - emergencyMode
         - emergencyRoad
         - cycleTime
+        - greenDuration
+        - countdown
+        - activeLane
         - timestamp
 
     EmergencyRequest:

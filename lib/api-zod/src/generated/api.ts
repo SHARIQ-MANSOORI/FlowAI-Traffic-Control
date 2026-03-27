@@ -28,11 +28,28 @@ export const GetTrafficStateResponse = zod.object({
       signal: zod.enum(["red", "yellow", "green"]),
       vehicleCount: zod.number(),
       isEmergency: zod.boolean(),
+      densityPercent: zod
+        .number()
+        .describe("Traffic density as a percentage 0–100"),
     }),
   ),
   emergencyMode: zod.boolean(),
   emergencyRoad: zod.string().nullable(),
-  cycleTime: zod.number(),
+  cycleTime: zod.number().describe("Legacy field — use greenDuration instead"),
+  greenDuration: zod
+    .number()
+    .describe(
+      "Current dynamically calculated green phase duration in seconds (10–40)",
+    ),
+  countdown: zod
+    .number()
+    .describe("Seconds remaining in the current green phase"),
+  activeLane: zod
+    .string()
+    .nullable()
+    .describe(
+      'Human-readable label of the active green road group e.g. \"North \/ South\"',
+    ),
   timestamp: zod.string(),
 });
 
