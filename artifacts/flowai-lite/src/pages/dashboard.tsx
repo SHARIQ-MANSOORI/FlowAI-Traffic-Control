@@ -5,6 +5,7 @@ import { Intersection } from "@/components/intersection";
 import { StatsPanel } from "@/components/stats-panel";
 import { ControlPanel } from "@/components/control-panel";
 import { AmbulancePanel } from "@/components/ambulance-panel";
+import { MiniStatsPanel } from "@/components/mini-stats-panel";
 import { AlertTriangle, Siren } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -74,9 +75,9 @@ export default function Dashboard() {
         {/* Main grid */}
         <main className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
 
-          {/* Left: Intersection */}
-          <div className="lg:col-span-8 flex flex-col">
-            <div className="flex-1 flex flex-col items-center justify-center p-4">
+          {/* Left: Intersection + mini stats */}
+          <div className="lg:col-span-8 flex flex-col gap-4">
+            <div className="flex flex-col items-center justify-center p-4">
               {isLoading ? (
                 <div className="flex flex-col items-center gap-4 font-mono text-primary animate-pulse">
                   <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
@@ -91,6 +92,7 @@ export default function Dashboard() {
                 <Intersection state={state} />
               )}
             </div>
+            {!isLoading && !isError && <MiniStatsPanel state={state} />}
           </div>
 
           {/* Right: Panels */}
