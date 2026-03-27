@@ -17,6 +17,7 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AmbulanceStartResponse,
   EmergencyRequest,
   EmergencyResponse,
   HealthStatus,
@@ -34,7 +35,6 @@ type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const getHealthCheckUrl = () => {
@@ -110,7 +110,6 @@ export function useHealthCheck<
 }
 
 /**
- * Returns the current state of all traffic signals and vehicles
  * @summary Get current traffic state
  */
 export const getGetTrafficStateUrl = () => {
@@ -186,8 +185,7 @@ export function useGetTrafficState<
 }
 
 /**
- * Activates emergency green corridor for ambulance on specified road
- * @summary Trigger emergency corridor
+ * @summary Trigger per-road emergency corridor
  */
 export const getTriggerEmergencyUrl = () => {
   return `/api/traffic/emergency`;
@@ -250,7 +248,7 @@ export type TriggerEmergencyMutationBody = BodyType<EmergencyRequest>;
 export type TriggerEmergencyMutationError = ErrorType<unknown>;
 
 /**
- * @summary Trigger emergency corridor
+ * @summary Trigger per-road emergency corridor
  */
 export const useTriggerEmergency = <
   TError = ErrorType<unknown>,
@@ -273,8 +271,7 @@ export const useTriggerEmergency = <
 };
 
 /**
- * Clears any emergency mode and resets to normal traffic cycling
- * @summary Reset to normal operation
+ * @summary Reset to normal AI operation
  */
 export const getResetTrafficUrl = () => {
   return `/api/traffic/reset`;
@@ -332,7 +329,7 @@ export type ResetTrafficMutationResult = NonNullable<
 export type ResetTrafficMutationError = ErrorType<unknown>;
 
 /**
- * @summary Reset to normal operation
+ * @summary Reset to normal AI operation
  */
 export const useResetTraffic = <
   TError = ErrorType<unknown>,
@@ -352,4 +349,166 @@ export const useResetTraffic = <
   TContext
 > => {
   return useMutation(getResetTrafficMutationOptions(options));
+};
+
+/**
+ * @summary Start ambulance green corridor (West → Center → East)
+ */
+export const getStartAmbulanceCorridorUrl = () => {
+  return `/api/traffic/ambulance/start`;
+};
+
+export const startAmbulanceCorridor = async (
+  options?: RequestInit,
+): Promise<AmbulanceStartResponse> => {
+  return customFetch<AmbulanceStartResponse>(getStartAmbulanceCorridorUrl(), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getStartAmbulanceCorridorMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof startAmbulanceCorridor>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof startAmbulanceCorridor>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["startAmbulanceCorridor"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof startAmbulanceCorridor>>,
+    void
+  > = () => {
+    return startAmbulanceCorridor(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type StartAmbulanceCorridorMutationResult = NonNullable<
+  Awaited<ReturnType<typeof startAmbulanceCorridor>>
+>;
+
+export type StartAmbulanceCorridorMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Start ambulance green corridor (West → Center → East)
+ */
+export const useStartAmbulanceCorridor = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof startAmbulanceCorridor>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof startAmbulanceCorridor>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getStartAmbulanceCorridorMutationOptions(options));
+};
+
+/**
+ * @summary Cancel active ambulance corridor
+ */
+export const getStopAmbulanceCorridorUrl = () => {
+  return `/api/traffic/ambulance/stop`;
+};
+
+export const stopAmbulanceCorridor = async (
+  options?: RequestInit,
+): Promise<ResetResponse> => {
+  return customFetch<ResetResponse>(getStopAmbulanceCorridorUrl(), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getStopAmbulanceCorridorMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof stopAmbulanceCorridor>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof stopAmbulanceCorridor>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["stopAmbulanceCorridor"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof stopAmbulanceCorridor>>,
+    void
+  > = () => {
+    return stopAmbulanceCorridor(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type StopAmbulanceCorridorMutationResult = NonNullable<
+  Awaited<ReturnType<typeof stopAmbulanceCorridor>>
+>;
+
+export type StopAmbulanceCorridorMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Cancel active ambulance corridor
+ */
+export const useStopAmbulanceCorridor = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof stopAmbulanceCorridor>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof stopAmbulanceCorridor>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getStopAmbulanceCorridorMutationOptions(options));
 };

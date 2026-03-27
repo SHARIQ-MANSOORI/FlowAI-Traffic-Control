@@ -8,7 +8,6 @@
 import * as zod from "zod";
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
@@ -16,7 +15,6 @@ export const HealthCheckResponse = zod.object({
 });
 
 /**
- * Returns the current state of all traffic signals and vehicles
  * @summary Get current traffic state
  */
 export const GetTrafficStateResponse = zod.object({
@@ -28,34 +26,36 @@ export const GetTrafficStateResponse = zod.object({
       signal: zod.enum(["red", "yellow", "green"]),
       vehicleCount: zod.number(),
       isEmergency: zod.boolean(),
-      densityPercent: zod
-        .number()
-        .describe("Traffic density as a percentage 0–100"),
+      densityPercent: zod.number(),
     }),
   ),
   emergencyMode: zod.boolean(),
   emergencyRoad: zod.string().nullable(),
-  cycleTime: zod.number().describe("Legacy field — use greenDuration instead"),
-  greenDuration: zod
-    .number()
-    .describe(
-      "Current dynamically calculated green phase duration in seconds (10–40)",
-    ),
-  countdown: zod
-    .number()
-    .describe("Seconds remaining in the current green phase"),
-  activeLane: zod
-    .string()
-    .nullable()
-    .describe(
-      'Human-readable label of the active green road group e.g. \"North \/ South\"',
-    ),
+  cycleTime: zod.number(),
+  greenDuration: zod.number(),
+  countdown: zod.number(),
+  activeLane: zod.string().nullable(),
+  ambulance: zod.object({
+    active: zod.boolean(),
+    phase: zod.enum(["idle", "approach", "crossing", "exit", "complete"]),
+    progress: zod
+      .number()
+      .describe("0–100, position along West→Center→East route"),
+    elapsedSeconds: zod.number(),
+    normalTimeMin: zod
+      .number()
+      .describe("Estimated normal travel time without AI corridor (minutes)"),
+    aiTimeMin: zod
+      .number()
+      .describe("AI-assisted travel time with green corridor (minutes)"),
+    timeSavedMin: zod.number(),
+    routeLabel: zod.string().describe("e.g. West → Center → East"),
+  }),
   timestamp: zod.string(),
 });
 
 /**
- * Activates emergency green corridor for ambulance on specified road
- * @summary Trigger emergency corridor
+ * @summary Trigger per-road emergency corridor
  */
 export const TriggerEmergencyBody = zod.object({
   roadId: zod.string(),
@@ -68,10 +68,25 @@ export const TriggerEmergencyResponse = zod.object({
 });
 
 /**
- * Clears any emergency mode and resets to normal traffic cycling
- * @summary Reset to normal operation
+ * @summary Reset to normal AI operation
  */
 export const ResetTrafficResponse = zod.object({
+  success: zod.boolean(),
+  message: zod.string(),
+});
+
+/**
+ * @summary Start ambulance green corridor (West → Center → East)
+ */
+export const StartAmbulanceCorridorResponse = zod.object({
+  success: zod.boolean(),
+  message: zod.string(),
+});
+
+/**
+ * @summary Cancel active ambulance corridor
+ */
+export const StopAmbulanceCorridorResponse = zod.object({
   success: zod.boolean(),
   message: zod.string(),
 });

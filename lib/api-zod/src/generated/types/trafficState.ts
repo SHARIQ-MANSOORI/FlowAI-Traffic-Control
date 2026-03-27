@@ -5,19 +5,17 @@
  * FlowAI Lite Traffic Control API
  * OpenAPI spec version: 0.1.0
  */
+import type { AmbulanceState } from "./ambulanceState";
 import type { RoadSignal } from "./roadSignal";
 
 export interface TrafficState {
   roads: RoadSignal[];
   emergencyMode: boolean;
   emergencyRoad: string | null;
-  /** Legacy field — use greenDuration instead */
   cycleTime: number;
-  /** Current dynamically calculated green phase duration in seconds (10–40) */
   greenDuration: number;
-  /** Seconds remaining in the current green phase */
   countdown: number;
-  /** Human-readable label of the active green road group e.g. "North / South" */
   activeLane: string | null;
+  ambulance: AmbulanceState;
   timestamp: string;
 }

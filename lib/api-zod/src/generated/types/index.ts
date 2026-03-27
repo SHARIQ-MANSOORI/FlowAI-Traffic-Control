@@ -6,6 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./ambulancePhase";
+export * from "./ambulanceStartResponse";
+export * from "./ambulanceState";
 export * from "./emergencyRequest";
 export * from "./emergencyResponse";
 export * from "./healthStatus";

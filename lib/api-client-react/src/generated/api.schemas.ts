@@ -34,22 +34,44 @@ export interface RoadSignal {
   signal: SignalColor;
   vehicleCount: number;
   isEmergency: boolean;
-  /** Traffic density as a percentage 0–100 */
   densityPercent: number;
+}
+
+export type AmbulancePhase =
+  (typeof AmbulancePhase)[keyof typeof AmbulancePhase];
+
+export const AmbulancePhase = {
+  idle: "idle",
+  approach: "approach",
+  crossing: "crossing",
+  exit: "exit",
+  complete: "complete",
+} as const;
+
+export interface AmbulanceState {
+  active: boolean;
+  phase: AmbulancePhase;
+  /** 0–100, position along West→Center→East route */
+  progress: number;
+  elapsedSeconds: number;
+  /** Estimated normal travel time without AI corridor (minutes) */
+  normalTimeMin: number;
+  /** AI-assisted travel time with green corridor (minutes) */
+  aiTimeMin: number;
+  timeSavedMin: number;
+  /** e.g. West → Center → East */
+  routeLabel: string;
 }
 
 export interface TrafficState {
   roads: RoadSignal[];
   emergencyMode: boolean;
   emergencyRoad: string | null;
-  /** Legacy field — use greenDuration instead */
   cycleTime: number;
-  /** Current dynamically calculated green phase duration in seconds (10–40) */
   greenDuration: number;
-  /** Seconds remaining in the current green phase */
   countdown: number;
-  /** Human-readable label of the active green road group e.g. "North / South" */
   activeLane: string | null;
+  ambulance: AmbulanceState;
   timestamp: string;
 }
 
@@ -61,6 +83,11 @@ export interface EmergencyResponse {
   success: boolean;
   message: string;
   roadId: string;
+}
+
+export interface AmbulanceStartResponse {
+  success: boolean;
+  message: string;
 }
 
 export interface ResetResponse {

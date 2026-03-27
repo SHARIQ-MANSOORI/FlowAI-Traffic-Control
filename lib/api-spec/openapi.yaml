@@ -17,7 +17,6 @@ paths:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -25,12 +24,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
   /traffic/state:
     get:
       operationId: getTrafficState
       tags: [traffic]
       summary: Get current traffic state
-      description: Returns the current state of all traffic signals and vehicles
       responses:
         "200":
           description: Current traffic state
@@ -38,12 +37,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TrafficState"
+
   /traffic/emergency:
     post:
       operationId: triggerEmergency
       tags: [traffic]
-      summary: Trigger emergency corridor
-      description: Activates emergency green corridor for ambulance on specified road
+      summary: Trigger per-road emergency corridor
       requestBody:
         required: true
         content:
@@ -57,15 +56,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EmergencyResponse"
+
   /traffic/reset:
     post:
       operationId: resetTraffic
       tags: [traffic]
-      summary: Reset to normal operation
-      description: Clears any emergency mode and resets to normal traffic cycling
+      summary: Reset to normal AI operation
       responses:
         "200":
           description: Traffic reset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResetResponse"
+
+  /traffic/ambulance/start:
+    post:
+      operationId: startAmbulanceCorridor
+      tags: [traffic]
+      summary: Start ambulance green corridor (West → Center → East)
+      responses:
+        "200":
+          description: Ambulance corridor started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AmbulanceStartResponse"
+
+  /traffic/ambulance/stop:
+    post:
+      operationId: stopAmbulanceCorridor
+      tags: [traffic]
+      summary: Cancel active ambulance corridor
+      responses:
+        "200":
+          description: Corridor cancelled
           content:
             application/json:
               schema:
@@ -78,8 +103,7 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
     SignalColor:
       type: string
@@ -103,15 +127,36 @@ components:
           type: boolean
         densityPercent:
           type: number
-          description: Traffic density as a percentage 0–100
-      required:
-        - id
-        - name
-        - direction
-        - signal
-        - vehicleCount
-        - isEmergency
-        - densityPercent
+      required: [id, name, direction, signal, vehicleCount, isEmergency, densityPercent]
+
+    AmbulancePhase:
+      type: string
+      enum: [idle, approach, crossing, exit, complete]
+
+    AmbulanceState:
+      type: object
+      properties:
+        active:
+          type: boolean
+        phase:
+          $ref: "#/components/schemas/AmbulancePhase"
+        progress:
+          type: number
+          description: 0–100, position along West→Center→East route
+        elapsedSeconds:
+          type: number
+        normalTimeMin:
+          type: number
+          description: Estimated normal travel time without AI corridor (minutes)
+        aiTimeMin:
+          type: number
+          description: AI-assisted travel time with green corridor (minutes)
+        timeSavedMin:
+          type: number
+        routeLabel:
+          type: string
+          description: "e.g. West → Center → East"
+      required: [active, phase, progress, elapsedSeconds, normalTimeMin, aiTimeMin, timeSavedMin, routeLabel]
 
     TrafficState:
       type: object
@@ -127,36 +172,25 @@ components:
           nullable: true
         cycleTime:
           type: integer
-          description: Legacy field — use greenDuration instead
         greenDuration:
           type: integer
-          description: Current dynamically calculated green phase duration in seconds (10–40)
         countdown:
           type: integer
-          description: Seconds remaining in the current green phase
         activeLane:
           type: string
           nullable: true
-          description: Human-readable label of the active green road group e.g. "North / South"
+        ambulance:
+          $ref: "#/components/schemas/AmbulanceState"
         timestamp:
           type: string
-      required:
-        - roads
-        - emergencyMode
-        - emergencyRoad
-        - cycleTime
-        - greenDuration
-        - countdown
-        - activeLane
-        - timestamp
+      required: [roads, emergencyMode, emergencyRoad, cycleTime, greenDuration, countdown, activeLane, ambulance, timestamp]
 
     EmergencyRequest:
       type: object
       properties:
         roadId:
           type: string
-      required:
-        - roadId
+      required: [roadId]
 
     EmergencyResponse:
       type: object
@@ -167,10 +201,16 @@ components:
           type: string
         roadId:
           type: string
-      required:
-        - success
-        - message
-        - roadId
+      required: [success, message, roadId]
+
+    AmbulanceStartResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required: [success, message]
 
     ResetResponse:
       type: object
@@ -179,6 +219,4 @@ components:
           type: boolean
         message:
           type: string
-      required:
-        - success
-        - message
+      required: [success, message]

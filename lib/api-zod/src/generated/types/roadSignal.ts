@@ -15,6 +15,5 @@ export interface RoadSignal {
   signal: SignalColor;
   vehicleCount: number;
   isEmergency: boolean;
-  /** Traffic density as a percentage 0–100 */
   densityPercent: number;
 }
