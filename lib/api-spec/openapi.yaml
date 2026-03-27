@@ -1,15 +1,16 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: FlowAI Lite Traffic Control API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: traffic
+    description: Traffic signal operations
 paths:
   /healthz:
     get:
@@ -24,6 +25,52 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /traffic/state:
+    get:
+      operationId: getTrafficState
+      tags: [traffic]
+      summary: Get current traffic state
+      description: Returns the current state of all traffic signals and vehicles
+      responses:
+        "200":
+          description: Current traffic state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrafficState"
+  /traffic/emergency:
+    post:
+      operationId: triggerEmergency
+      tags: [traffic]
+      summary: Trigger emergency corridor
+      description: Activates emergency green corridor for ambulance on specified road
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmergencyRequest"
+      responses:
+        "200":
+          description: Emergency triggered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmergencyResponse"
+  /traffic/reset:
+    post:
+      operationId: resetTraffic
+      tags: [traffic]
+      summary: Reset to normal operation
+      description: Clears any emergency mode and resets to normal traffic cycling
+      responses:
+        "200":
+          description: Traffic reset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResetResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +81,86 @@ components:
       required:
         - status
 
+    SignalColor:
+      type: string
+      enum: [red, yellow, green]
+
+    RoadSignal:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        direction:
+          type: string
+          enum: [north, south, east, west]
+        signal:
+          $ref: "#/components/schemas/SignalColor"
+        vehicleCount:
+          type: integer
+        isEmergency:
+          type: boolean
+      required:
+        - id
+        - name
+        - direction
+        - signal
+        - vehicleCount
+        - isEmergency
+
+    TrafficState:
+      type: object
+      properties:
+        roads:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoadSignal"
+        emergencyMode:
+          type: boolean
+        emergencyRoad:
+          type: string
+          nullable: true
+        cycleTime:
+          type: integer
+        timestamp:
+          type: string
+      required:
+        - roads
+        - emergencyMode
+        - emergencyRoad
+        - cycleTime
+        - timestamp
+
+    EmergencyRequest:
+      type: object
+      properties:
+        roadId:
+          type: string
+      required:
+        - roadId
+
+    EmergencyResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        roadId:
+          type: string
+      required:
+        - success
+        - message
+        - roadId
+
+    ResetResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+        - message

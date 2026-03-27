@@ -1,0 +1,15 @@
+packages:
+  "socket.io-client": "Required for receiving real-time traffic updates from the backend"
+  "framer-motion": "Used for sophisticated layout animations and glowing effects"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility to merge tailwind classes without style conflicts"
+  "date-fns": "For formatting timestamps"
+
+images:
+  - path: "artifacts/flowai-lite/public/images/cyber-grid.png"
+    description: "A dark cyberpunk style perspective grid background with subtle electric blue and magenta neon lines fading into deep black."
+    aspect_ratio: "16:9"
+
+notes:
+  - "The app assumes the backend is serving Socket.io on the same origin."
+  - "React Query hooks are imported from the generated @workspace/api-client-react package."

@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+}
+
+:root {
+  /* Deep dark professional cyberpunk palette */
+  --background: 230 25% 4%;
+  --foreground: 210 40% 98%;
+  
+  --card: 230 25% 7%;
+  --card-foreground: 210 40% 98%;
+  
+  --popover: 230 25% 7%;
+  --popover-foreground: 210 40% 98%;
+  
+  --primary: 190 90% 50%;
+  --primary-foreground: 230 25% 4%;
+  
+  --secondary: 230 25% 12%;
+  --secondary-foreground: 210 40% 98%;
+  
+  --muted: 230 25% 12%;
+  --muted-foreground: 215 20% 65%;
+  
+  --accent: 280 80% 60%;
+  --accent-foreground: 210 40% 98%;
+  
+  --destructive: 350 90% 60%;
+  --destructive-foreground: 210 40% 98%;
+  
+  --border: 230 25% 15%;
+  --input: 230 25% 15%;
+  --ring: 190 90% 50%;
+  
+  --radius: 0.75rem;
+
+  /* Traffic Signal Colors */
+  --signal-red: 350 90% 60%;
+  --signal-yellow: 45 100% 50%;
+  --signal-green: 140 90% 50%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased overflow-x-hidden;
+    background-image: 
+      radial-gradient(circle at 50% 0%, hsl(190 90% 50% / 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 50% 100%, hsl(280 80% 60% / 0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-card/60 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+  
+  .glow-text-primary {
+    text-shadow: 0 0 10px hsl(var(--primary) / 0.5);
+  }
+  
+  .glow-text-destructive {
+    text-shadow: 0 0 10px hsl(var(--destructive) / 0.5);
+  }
+
+  .glow-red {
+    box-shadow: 0 0 15px 4px hsl(var(--signal-red) / 0.6), inset 0 0 10px hsl(var(--signal-red) / 0.8);
+    background-color: hsl(var(--signal-red));
+  }
+  
+  .glow-yellow {
+    box-shadow: 0 0 15px 4px hsl(var(--signal-yellow) / 0.6), inset 0 0 10px hsl(var(--signal-yellow) / 0.8);
+    background-color: hsl(var(--signal-yellow));
+  }
+  
+  .glow-green {
+    box-shadow: 0 0 15px 4px hsl(var(--signal-green) / 0.6), inset 0 0 10px hsl(var(--signal-green) / 0.8);
+    background-color: hsl(var(--signal-green));
+  }
+
+  .dim-red { background-color: hsl(var(--signal-red) / 0.15); border: 1px solid hsl(var(--signal-red) / 0.3); }
+  .dim-yellow { background-color: hsl(var(--signal-yellow) / 0.15); border: 1px solid hsl(var(--signal-yellow) / 0.3); }
+  .dim-green { background-color: hsl(var(--signal-green) / 0.15); border: 1px solid hsl(var(--signal-green) / 0.3); }
+
+  .road-texture {
+    background-color: hsl(230 20% 8%);
+    background-image: 
+      linear-gradient(90deg, transparent 48%, hsl(230 20% 15%) 48%, hsl(230 20% 15%) 52%, transparent 52%),
+      linear-gradient(0deg, transparent 48%, hsl(230 20% 15%) 48%, hsl(230 20% 15%) 52%, transparent 52%);
+    background-size: 40px 40px;
+  }
+  
+  .road-stripes-v {
+    background-image: linear-gradient(to bottom, hsl(45 100% 50% / 0.6) 50%, transparent 50%);
+    background-size: 4px 30px;
+    background-repeat: repeat-y;
+    background-position: center;
+  }
+  
+  .road-stripes-h {
+    background-image: linear-gradient(to right, hsl(45 100% 50% / 0.6) 50%, transparent 50%);
+    background-size: 30px 4px;
+    background-repeat: repeat-x;
+    background-position: center;
+  }
+}

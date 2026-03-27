@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "FlowAI Lite"
+version = "1.0.0"
+id = "artifacts/flowai-lite"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20390
+
+[services.development]
+run = "pnpm --filter @workspace/flowai-lite run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/flowai-lite", "run", "build" ]
+publicDir = "artifacts/flowai-lite/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20390"
+BASE_PATH = "/"
